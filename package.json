@@ -1,0 +1,24 @@
+{
+  "name": "hello-mediasoft",
+  "version": "1.0.0",
+  "description": "Homework of mediasoft",
+  "main": "index.html",
+  "scripts": {
+    "start": "supervisor server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DahakaLab/hello-mediasoft.git"
+  },
+  "keywords": [],
+  "author": "Kamanin Nikita",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DahakaLab/hello-mediasoft/issues"
+  },
+  "homepage": "https://github.com/DahakaLab/hello-mediasoft#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "supervisor": "^0.12.0"
+  }
+}
