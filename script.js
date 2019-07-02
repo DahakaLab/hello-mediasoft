@@ -7,18 +7,22 @@ const changeMessage = (message) => {
 
 const calculateExpression = (expression) => {
   try {
-    changeMessage(`Результат:\n${expression} = ${eval(expression)}`);
+    if (eval(expression) !== undefined) {
+      changeMessage(`Результат:\n${expression} = ${eval(expression)}`);
+    } else {
+      changeMessage(`Выражение \'${expression}\' неккоректно`);
+    }
   } catch {
     changeMessage(`Выражение \'${expression}\' неккоректно`);
   }
 };
 
 const checkExpression = (expression) => {
-  const validCharacters = /[^0-9\+\-\*\/\(\)\ ]/;
+  const validCharacters = /[^0-9\+\-\*\/\(\)\ \.]/;
   if (!validCharacters.test(expression)) {
     calculateExpression(expression);
   } else {
-    changeMessage('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \').');
+    changeMessage('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \', \'.\').');
   }
 };
 
