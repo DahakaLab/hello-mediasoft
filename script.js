@@ -18,10 +18,10 @@ const calculator = {
       }
     }
   },
-  _validCharacters: /[^0-9\+\-\*\/\(\)\ \.]/,
+  _validCharactersRegExp: /[^0-9\+\-\*\/\(\)\ \.]/,
   get _errors() {
     const _errors = [];
-    if (this._validCharacters.test(this.expression)) {
+    if (this._validCharactersRegExp.test(this.expression)) {
       _errors.push('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \', \'.\').');
     }
     return _errors;
