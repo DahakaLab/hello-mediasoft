@@ -1,40 +1,44 @@
 const messageOutEl = document.querySelector('h1');
 const inputStartBtn = document.querySelector('button');
 
+const calculator = {
+  expression: '',
+  get resultMessage() {
+    if (this._errors.length) {
+      return this._errors.join('/n');
+    } else {
+      try {
+        if (eval(this.expression) !== undefined) {
+          return `Результат:\n${this.expression} = ${this._resultExpression}`;
+        } else {
+          return `Выражение \'${this.expression}\' некорректно`;
+        }
+      } catch {
+        return `Выражение \'${this.expression}\' некорректно`;
+      }
+    }
+  },
+  _validCharacters: /[^0-9\+\-\*\/\(\)\ \.]/,
+  get _errors() {
+    const _errors = [];
+    if (this._validCharacters.test(this.expression)) {
+      _errors.push('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \', \'.\').');
+    }
+    return _errors;
+  },
+  get _resultExpression() {
+    return eval(this.expression);
+  },
+};
+
 const changeMessage = (message) => {
   messageOutEl.innerText = message;
 };
 
-const calculateExpression = (expression) => {
-  try {
-    if (eval(expression) !== undefined) {
-      changeMessage(`Результат:\n${expression} = ${eval(expression)}`);
-    } else {
-      changeMessage(`Выражение \'${expression}\' некорректно`);
-    }
-  } catch {
-    changeMessage(`Выражение \'${expression}\' некорректно`);
-  }
-};
-
-const checkExpression = (expression) => {
-  const validCharacters = /[^0-9\+\-\*\/\(\)\ \.]/;
-  const errors = [];
-  if (validCharacters.test(expression)) {
-    errors.push('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \', \'.\').');
-  }
-  return errors;
-};
-
 const inputStart = () => {
-  const inputValue = prompt('Введите вычисляемое выражение', '');
-  if (inputValue) {
-    const checkResult = checkExpression(inputValue);
-    if (checkResult.length) {
-      changeMessage(checkResult.join('/n'));
-    } else {
-      calculateExpression(inputValue);
-    }
+  calculator.expression = prompt('Введите вычисляемое выражение', '');
+  if (calculator.expression) {
+    changeMessage(calculator.resultMessage);
   } else {
     changeMessage('Ввод отменен');
   }
