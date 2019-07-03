@@ -19,17 +19,22 @@ const calculateExpression = (expression) => {
 
 const checkExpression = (expression) => {
   const validCharacters = /[^0-9\+\-\*\/\(\)\ \.]/;
-  if (!validCharacters.test(expression)) {
-    calculateExpression(expression);
-  } else {
-    changeMessage('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \', \'.\').');
+  const errors = [];
+  if (validCharacters.test(expression)) {
+    errors.push('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \', \'.\').');
   }
+  return errors;
 };
 
 const inputStart = () => {
   const inputValue = prompt('Введите вычисляемое выражение', '');
   if (inputValue) {
-    checkExpression(inputValue);
+    const checkResult = checkExpression(inputValue);
+    if (checkResult.length) {
+      changeMessage(checkResult.join('/n'));
+    } else {
+      calculateExpression(inputValue);
+    }
   } else {
     changeMessage('Ввод отменен');
   }
