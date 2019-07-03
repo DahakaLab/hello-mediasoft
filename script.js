@@ -10,10 +10,10 @@ const calculateExpression = (expression) => {
     if (eval(expression) !== undefined) {
       changeMessage(`Результат:\n${expression} = ${eval(expression)}`);
     } else {
-      changeMessage(`Выражение \'${expression}\' неккоректно`);
+      changeMessage(`Выражение \'${expression}\' некорректно`);
     }
   } catch {
-    changeMessage(`Выражение \'${expression}\' неккоректно`);
+    changeMessage(`Выражение \'${expression}\' некорректно`);
   }
 };
 
