@@ -2,32 +2,33 @@ const messageOutEl = document.querySelector('h1');
 const inputStartBtn = document.querySelector('button');
 
 const calculator = {
-  expression: '',
-  get resultMessage() {
-    if (this._errors.length) {
-      return this._errors.join('/n');
+  createResultMessage(expression) {
+    const errors = this._checkErrors(expression);
+    if (errors.length) {
+      return errors.join('/n');
     } else {
       try {
-        if (eval(this.expression) !== undefined) {
-          return `Результат:\n${this.expression} = ${this._resultExpression}`;
+        const resultExpression = this._resultExpression(expression);
+        if (resultExpression !== undefined) {
+          return `Результат:\n${expression} = ${resultExpression}`;
         } else {
-          return `Выражение \'${this.expression}\' некорректно`;
+          return `Выражение \'${expression}\' некорректно`;
         }
       } catch {
-        return `Выражение \'${this.expression}\' некорректно`;
+        return `Выражение \'${expression}\' некорректно`;
       }
     }
   },
   _validCharactersRegExp: /[^0-9\+\-\*\/\(\)\ \.]/,
-  get _errors() {
-    const _errors = [];
-    if (this._validCharactersRegExp.test(this.expression)) {
-      _errors.push('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \', \'.\').');
+  _checkErrors(expression) {
+    const errors = [];
+    if (this._validCharactersRegExp.test(expression)) {
+      errors.push('Используйте только числа и допустимые символы: (\'+\', \'-\', \'*\', \'/\', \' \', \'.\').');
     }
-    return _errors;
+    return errors;
   },
-  get _resultExpression() {
-    return eval(this.expression);
+  _resultExpression(expression) {
+    return eval(expression);
   },
 };
 
@@ -36,9 +37,9 @@ const changeMessage = (message) => {
 };
 
 const inputStart = () => {
-  calculator.expression = prompt('Введите вычисляемое выражение', '');
-  if (calculator.expression) {
-    changeMessage(calculator.resultMessage);
+  const expression = prompt('Введите вычисляемое выражение', '');
+  if (expression) {
+    changeMessage(calculator.createResultMessage(expression));
   } else {
     changeMessage('Ввод отменен');
   }
