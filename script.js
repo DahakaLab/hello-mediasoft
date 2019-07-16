@@ -34,10 +34,12 @@ class FilmsInfo {
     this._state = this._filmsTarget.reduce((state, film) => {
       if (film.title) {
         state.films[film.title] = FilmsInfo._deleteKeys(film, 'title');
+        if (film.actors) state.films[film.title].actorsName = FilmsInfo._getNamesInArrObjects(film.actors);
         this._addingMessage.heading(2, `Фильм: ${film.title}`);
       };
       if (film.director && film.director.name) {
         state.directors[film.director.name] = FilmsInfo._deleteKeys(film.director, 'name');
+        state.directors[film.director.name].filmTitle = film.title;
         this._addingMessage.heading(3, `Режжисер: ${film.title}`);
       }
       if (film.actors) {
@@ -79,6 +81,53 @@ class FilmsInfo {
       delete currentObj[key];
     })
     return currentObj;
+  }
+
+  static _getNamesInArrObjects(arr) {
+    const validArr = [];
+    arr.forEach((item) => {
+      if (item.name) validArr.push(item.name);
+    })
+    return validArr;
+  }
+
+  jointRole(targetActor = 'Tom Hanks', filmCreationYear = 1995) {
+    const { films } = this._state;
+    const addMessage = new AddMessage();
+    const validFilms = [];
+    Object.keys(films).forEach((currentFilmName) => {
+      if (films[currentFilmName].creationYear > filmCreationYear) {
+        validFilms.push(currentFilmName);
+      }
+    });
+    let validActors = validFilms.reduce((currentValidActors, currentValidFilmName) => {
+      const currentActors = [];
+      if (films[currentValidFilmName].actors) {
+        films[currentValidFilmName].actors.forEach((actor) => {
+          currentActors.push(actor.name);
+        });
+      }
+      window.arr1 = currentValidActors;
+      window.arr2 = currentActors;
+      return (~currentActors.indexOf(targetActor)) ? currentValidActors.concat(currentActors) : currentValidActors;
+    }, []);
+    return validActors = validActors.filter((checkActorName) => checkActorName !== targetActor);
+  };
+
+  amountBudgetWithoyActor(directorAge = 70, targetActor = 'Tom Hanks') {
+    const { directors, actors, films } = this._state;
+    const validDirectorsNames = [];
+    Object.keys(directors).forEach((currentDirectorName) => {
+      if (directors[currentDirectorName].age < directorAge) validDirectorsNames.push(currentDirectorName);
+    });
+    return Object.keys(films).reduce((amountBudget, filmName) => {
+      const currentFilm = films[filmName];
+      if (~validDirectorsNames.indexOf(currentFilm.director.name) && !~currentFilm.actorsName.indexOf(targetActor)) {
+        const currentBudject = parseInt(currentFilm.budget.replace(/[\s\$]/g, ''), 10);
+        amountBudget = currentBudject ? amountBudget + currentBudject : amountBudget;
+      }
+      return amountBudget;
+    }, 0);
   }
 }
 
@@ -132,44 +181,54 @@ const averageAgeActors = (state, directorName = '', directorOscarsCount = 0) => 
   }
 };
 
-const jointRole = (state, targetActor = 'Tom Hanks', filmCreationYear = 1995) => {
-  const { films } = state;
-  const addMessage = new AddMessage();
-  const validFilms = [];
-  Object.keys(films).forEach((currentFilmName) => {
-    if (films[currentFilmName].creationYear > filmCreationYear) {
-      validFilms.push(currentFilmName);
-    }
-  });
-  let validActors = validFilms.reduce((currentValidActors, currentValidFilmName) => {
-    const currentActors = [];
-    if (films[currentValidFilmName].actors) {
-      films[currentValidFilmName].actors.forEach((actor) => {
-        currentActors.push(actor.name);
-      });
-    }
-    window.arr1 = currentValidActors;
-    window.arr2 = currentActors;
-    return (~currentActors.indexOf(targetActor)) ? currentValidActors.concat(currentActors) : currentValidActors;
-  }, []);
-  validActors = validActors.filter((checkActorName) => checkActorName !== targetActor);
-  const message = validActors.length 
-    ? `2. Имена всех актеров, которые играли с ${targetActor}, в фильмах после ${filmCreationYear} года: ${validActors.join(', ')}` 
-    : `2. Нет актеров, которые играли с ${targetActor}, в фильмах после ${filmCreationYear} года.`;
-  addMessage.heading(2, message);
-  console.log(message);
-};
+// const jointRole = (state, targetActor = 'Tom Hanks', filmCreationYear = 1995) => {
+//   const { films } = state;
+//   const addMessage = new AddMessage();
+//   const validFilms = [];
+//   Object.keys(films).forEach((currentFilmName) => {
+//     if (films[currentFilmName].creationYear > filmCreationYear) {
+//       validFilms.push(currentFilmName);
+//     }
+//   });
+//   let validActors = validFilms.reduce((currentValidActors, currentValidFilmName) => {
+//     const currentActors = [];
+//     if (films[currentValidFilmName].actors) {
+//       films[currentValidFilmName].actors.forEach((actor) => {
+//         currentActors.push(actor.name);
+//       });
+//     }
+//     window.arr1 = currentValidActors;
+//     window.arr2 = currentActors;
+//     return (~currentActors.indexOf(targetActor)) ? currentValidActors.concat(currentActors) : currentValidActors;
+//   }, []);
+//   validActors = validActors.filter((checkActorName) => checkActorName !== targetActor);
+//   const message = validActors.length 
+//     ? `2. Имена всех актеров, которые играли с ${targetActor}, в фильмах после ${filmCreationYear} года: ${validActors.join(', ')}` 
+//     : `2. Нет актеров, которые играли с ${targetActor}, в фильмах после ${filmCreationYear} года.`;
+//   addMessage.heading(2, message);
+//   console.log(message);
+// };
 
 const loadSuccess = (filmsTarget) => {
   const filmsInfoEl = document.querySelector('.films-info'); // Поиск елемента для вставки информации по фильмам.
   const filmInputsEl = document.querySelector('.film-inputs');
   const filmsInfo = new FilmsInfo(filmsTarget, filmsInfoEl);
+  const addMessage = new AddMessage();
   console.log(filmsTarget);
   changeMessage('Данные загружены.\n\n***');
   inputStartBtn.style.display = 'none';
   initSelects(filmsInfo.directors, filmsInfo.state);
+  const jointRoleArr = filmsInfo.jointRole();
+  const jointRoleMessage = jointRoleArr.length 
+    ? `2. Имена всех актеров, которые играли с Томом Хэнксом, в фильмах после 1995 года: ${jointRoleArr.join(', ')}` 
+    : `2. Нет актеров, которые играли с Томом Хэнксом, в фильмах после 1995 года.`;
+  addMessage.heading(2, jointRoleMessage);
+  console.log(jointRoleMessage);
+  const amountBudgetWithoyActor = filmsInfo.amountBudgetWithoyActor();
+  const amountBudgetWithoyActorMessage = `3. Общий бюджет (сумма) фильмов, с режиссерами младше 70 лет и в которых не играл Том Хэнкс: $${amountBudgetWithoyActor}`;
+  console.log(amountBudgetWithoyActorMessage);
+  addMessage.heading(2, amountBudgetWithoyActorMessage);
   filmInputsEl.style.display = 'block';
-  jointRole(filmsInfo.state);
 };
 
 inputStartBtn.addEventListener('click', () => {
