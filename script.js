@@ -149,7 +149,7 @@ class FilmsInfo {
     return Object.keys(films).reduce((amountBudget, filmName) => {
       const currentFilm = films[filmName];
       if (~validDirectorsNames.indexOf(currentFilm.director.name) && !~currentFilm.actorsName.indexOf(targetActor)) {
-        const currentBudject = parseInt(currentFilm.budget.replace(/[\s\$]/g, ''), 10);
+        const currentBudject = parseInt(currentFilm.budget.replace(/\D/g, ''), 10);
         amountBudget = currentBudject ? amountBudget + currentBudject : amountBudget;
       }
       return amountBudget;
