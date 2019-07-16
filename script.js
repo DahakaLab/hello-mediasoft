@@ -192,7 +192,6 @@ const loadSuccess = (filmsTarget) => {
   const filmInputsEl = document.querySelector('.film-inputs');
   const filmsInfo = new FilmsInfo(filmsTarget, filmsInfoEl);
   const addMessage = new AddMessage();
-  console.log(filmsTarget);
   changeMessage('Данные загружены.\n\n***');
   inputStartBtn.style.display = 'none';
   initSelects(filmsInfo.directors, filmsInfo);
