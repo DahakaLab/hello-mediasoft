@@ -126,11 +126,39 @@ const averageAgeActors = (state, directorName = '', directorOscarsCount = 0) => 
     }, 0) / validActors.length;
 
     console.log(`Средний возраст актеров: ${+averageAgeValidActors.toFixed(2)}`);
-    actorsAverageAgeEl.innerHTML = `Средний возраст актеров: ${+averageAgeValidActors.toFixed(2)}`;
+    actorsAverageAgeEl.innerHTML = `1. Средний возраст актеров: ${+averageAgeValidActors.toFixed(2)}`;
   } else {
-    actorsAverageAgeEl.innerHTML = 'Нет такого режиссера с таким количеством оскара';
+    actorsAverageAgeEl.innerHTML = '1. Нет такого режиссера с таким количеством оскара';
   }
-}
+};
+
+const jointRole = (state, targetActor = 'Tom Hanks', filmCreationYear = 1995) => {
+  const { films } = state;
+  const addMessage = new AddMessage();
+  const validFilms = [];
+  Object.keys(films).forEach((currentFilmName) => {
+    if (films[currentFilmName].creationYear > filmCreationYear) {
+      validFilms.push(currentFilmName);
+    }
+  });
+  let validActors = validFilms.reduce((currentValidActors, currentValidFilmName) => {
+    const currentActors = [];
+    if (films[currentValidFilmName].actors) {
+      films[currentValidFilmName].actors.forEach((actor) => {
+        currentActors.push(actor.name);
+      });
+    }
+    window.arr1 = currentValidActors;
+    window.arr2 = currentActors;
+    return (~currentActors.indexOf(targetActor)) ? currentValidActors.concat(currentActors) : currentValidActors;
+  }, []);
+  validActors = validActors.filter((checkActorName) => checkActorName !== targetActor);
+  const message = validActors.length 
+    ? `2. Имена всех актеров, которые играли с ${targetActor}, в фильмах после ${filmCreationYear} года: ${validActors.join(', ')}` 
+    : `2. Нет актеров, которые играли с ${targetActor}, в фильмах после ${filmCreationYear} года.`;
+  addMessage.heading(2, message);
+  console.log(message);
+};
 
 const loadSuccess = (filmsTarget) => {
   const filmsInfoEl = document.querySelector('.films-info'); // Поиск елемента для вставки информации по фильмам.
@@ -141,9 +169,9 @@ const loadSuccess = (filmsTarget) => {
   inputStartBtn.style.display = 'none';
   initSelects(filmsInfo.directors, filmsInfo.state);
   filmInputsEl.style.display = 'block';
+  jointRole(filmsInfo.state);
 };
 
-// inputStartBtn.addEventListener('click', () => inputStart()); // По клику на кнопку запусе функции получния значения.
 inputStartBtn.addEventListener('click', () => {
   changeMessage('Обновление данных...');
   fetch('./films.json')
