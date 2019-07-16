@@ -91,6 +91,32 @@ class FilmsInfo {
     return validArr;
   }
 
+  averageAgeActors(directorName = '', directorOscarsCount = 0) {
+    const { directors, actors, films } = this._state;
+    const validDirectors = [];
+    const validActors = [];
+    Object.keys(directors).forEach((currentDirectorName) => {
+      if (+directors[currentDirectorName].oscarsCount === +directorOscarsCount && currentDirectorName === directorName) {
+        validDirectors.push(currentDirectorName);
+      }
+    });
+    if (validDirectors.length) {
+      Object.keys(films).forEach((filmTitle) => {
+        if (films[filmTitle].director && films[filmTitle].actors && ~validDirectors.indexOf(films[filmTitle].director.name)) {
+          films[filmTitle].actors.forEach((currentActor) => {
+            if (currentActor.name) validActors.push(currentActor.name);
+          })
+        }
+      });
+      return validActors.reduce((maxAge, currentValidActiors) => {
+        const currentValidActiorsAge = actors[currentValidActiors].age || 0;
+        return maxAge + currentValidActiorsAge;
+      }, 0) / validActors.length;
+    } else {
+      return undefined;
+    }
+  }
+
   jointRole(targetActor = 'Tom Hanks', filmCreationYear = 1995) {
     const { films } = this._state;
     const addMessage = new AddMessage();
@@ -131,7 +157,7 @@ class FilmsInfo {
   }
 }
 
-const initSelects = (directors = {}, state) => {
+const initSelects = (directors = {}, instance) => {
   const selectDirectorsEl = document.querySelector('[name = \'directors\']');
   const selectOscarsCountEl = document.querySelector('[name = \'oscarCount\']');
   const currentOscarsCountsVariations = [];
@@ -143,71 +169,23 @@ const initSelects = (directors = {}, state) => {
       currentOscarsCountsVariations.push(currentOscarsCounts);
     }
   });
-  if (selectDirectorsEl.value && selectOscarsCountEl.value && state) {
-    averageAgeActors(state, selectDirectorsEl.value, selectOscarsCountEl.value);
+  if (selectDirectorsEl.value && selectOscarsCountEl.value && instance) {
+    averageAgeActorsUpdate(instance, selectDirectorsEl.value, selectOscarsCountEl.value);
     Array.of(selectDirectorsEl, selectOscarsCountEl).forEach((select) => {
-      select.addEventListener('change', () => averageAgeActors(state, selectDirectorsEl.value, selectOscarsCountEl.value));
+      select.addEventListener('change', () => averageAgeActorsUpdate(instance, selectDirectorsEl.value, selectOscarsCountEl.value));
     });
   }
 }
 
-const averageAgeActors = (state, directorName = '', directorOscarsCount = 0) => {
+const averageAgeActorsUpdate = (instance, directorName = '', directorOscarsCount = 0) => {
   const actorsAverageAgeEl = document.querySelector('.actors-average-age');
-  const { directors, actors, films } = state;
-  const validDirectors = [];
-  const validActors = [];
-  Object.keys(directors).forEach((currentDirectorName) => {
-    if (+directors[currentDirectorName].oscarsCount === +directorOscarsCount && currentDirectorName === directorName) {
-      validDirectors.push(currentDirectorName);
-    }
-  });
-  if (validDirectors.length) {
-    Object.keys(films).forEach((filmTitle) => {
-      if (films[filmTitle].director && films[filmTitle].actors && ~validDirectors.indexOf(films[filmTitle].director.name)) {
-        films[filmTitle].actors.forEach((currentActor) => {
-          if (currentActor.name) validActors.push(currentActor.name);
-        })
-      }
-    });
-    const averageAgeValidActors = validActors.reduce((maxAge, currentValidActiors) => {
-      const currentValidActiorsAge = actors[currentValidActiors].age || 0;
-      return maxAge + currentValidActiorsAge;
-    }, 0) / validActors.length;
-
-    console.log(`Средний возраст актеров: ${+averageAgeValidActors.toFixed(2)}`);
-    actorsAverageAgeEl.innerHTML = `1. Средний возраст актеров: ${+averageAgeValidActors.toFixed(2)}`;
-  } else {
-    actorsAverageAgeEl.innerHTML = '1. Нет такого режиссера с таким количеством оскара';
-  }
+  const averageAgeValidActors = instance.averageAgeActors(directorName, directorOscarsCount);
+  const averageAgeValidActorsMessage = averageAgeValidActors 
+    ? `1. Средний возраст актеров: ${+averageAgeValidActors.toFixed(2)}`
+    : '1. Нет данных по выбранным значениям';
+  console.log(averageAgeValidActorsMessage);
+  actorsAverageAgeEl.innerHTML = averageAgeValidActorsMessage;
 };
-
-// const jointRole = (state, targetActor = 'Tom Hanks', filmCreationYear = 1995) => {
-//   const { films } = state;
-//   const addMessage = new AddMessage();
-//   const validFilms = [];
-//   Object.keys(films).forEach((currentFilmName) => {
-//     if (films[currentFilmName].creationYear > filmCreationYear) {
-//       validFilms.push(currentFilmName);
-//     }
-//   });
-//   let validActors = validFilms.reduce((currentValidActors, currentValidFilmName) => {
-//     const currentActors = [];
-//     if (films[currentValidFilmName].actors) {
-//       films[currentValidFilmName].actors.forEach((actor) => {
-//         currentActors.push(actor.name);
-//       });
-//     }
-//     window.arr1 = currentValidActors;
-//     window.arr2 = currentActors;
-//     return (~currentActors.indexOf(targetActor)) ? currentValidActors.concat(currentActors) : currentValidActors;
-//   }, []);
-//   validActors = validActors.filter((checkActorName) => checkActorName !== targetActor);
-//   const message = validActors.length 
-//     ? `2. Имена всех актеров, которые играли с ${targetActor}, в фильмах после ${filmCreationYear} года: ${validActors.join(', ')}` 
-//     : `2. Нет актеров, которые играли с ${targetActor}, в фильмах после ${filmCreationYear} года.`;
-//   addMessage.heading(2, message);
-//   console.log(message);
-// };
 
 const loadSuccess = (filmsTarget) => {
   const filmsInfoEl = document.querySelector('.films-info'); // Поиск елемента для вставки информации по фильмам.
@@ -217,7 +195,7 @@ const loadSuccess = (filmsTarget) => {
   console.log(filmsTarget);
   changeMessage('Данные загружены.\n\n***');
   inputStartBtn.style.display = 'none';
-  initSelects(filmsInfo.directors, filmsInfo.state);
+  initSelects(filmsInfo.directors, filmsInfo);
   const jointRoleArr = filmsInfo.jointRole();
   const jointRoleMessage = jointRoleArr.length 
     ? `2. Имена всех актеров, которые играли с Томом Хэнксом, в фильмах после 1995 года: ${jointRoleArr.join(', ')}` 
