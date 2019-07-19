@@ -1,3 +1,9 @@
-import script from './blocks/script';
+import Place from './blocks/place/place';
+import './autoload.scss';
 
-script();
+const rootEl = document.getElementById('rootEl');
+const place = new Place();
+
+console.log(rootEl);
+
+rootEl.appendChild(place.parentEl);
