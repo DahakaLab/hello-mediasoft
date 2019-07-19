@@ -4,8 +4,9 @@
   "description": "Homework of mediasoft",
   "main": "index.html",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "server": "supervisor dist/server.js"
+    "build": "webpack --config webpack.config.js --watch",
+    "server": "supervisor dist/server.js",
+    "start": "webpack --config webpack.config.js && node dist/server.js"
   },
   "repository": {
     "type": "git",

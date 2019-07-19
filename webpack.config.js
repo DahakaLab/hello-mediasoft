@@ -16,7 +16,6 @@ module.exports = {
       from: './source/pages/',
     }]),
   ],
-  watch: true,
   watchOptions: {
     ignored: '/node_modules/',
   }
