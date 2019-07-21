@@ -1,9 +1,5 @@
-import Place from './blocks/place/place';
+import chess from './blocks/chess/chess'
 import './autoload.scss';
 
-const rootEl = document.getElementById('rootEl');
-const place = new Place();
-
-console.log(rootEl);
-
-rootEl.appendChild(place.parentEl);
+const chessEl = document.getElementById('chess');
+(chessEl && chess(chessEl));
