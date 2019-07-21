@@ -9,7 +9,7 @@ export default class Place extends Component {
     super(targetEl, state);
     this.template = template(state);
     this.playerOutWhite = new PlaceOut(this.$refs.outWhite, { playerName: 'white' });
-    this._placeBoard = new PlaceBoard(this.$refs.board);
+    this.placeBoard = new PlaceBoard(this.$refs.board);
     this.playerOutBlack = new PlaceOut(this.$refs.outBlack, { playerName: 'black' });
   }
 }
