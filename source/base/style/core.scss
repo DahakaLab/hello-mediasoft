@@ -1,8 +1,21 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
 }
 
+#chess {
+  --board-dark: #5d3a26;
+  --board-border: #4f3e37;
+  --board-white-section: #e2c492;
+  --board-dark-section: var(--board-border);
+}
+
 .container {
-  max-width: 1024px;
+  width: 100%;
+  max-width: 1084px;
   margin: 0 auto;
+  padding: 0 30px;
 }

@@ -1,6 +1,7 @@
 import PlaceBoard from './board/place-board';
 import Component from '../../base/script/component';
 import PlaceOut from './out/place-out';
+import './place.scss';
 
 const template = require('./place.pug');
 

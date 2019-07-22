@@ -1,2 +1,8 @@
 .place-board
-  span place-board
+  .place-board__wrapper
+    .place-board__work-container
+      .place-board__work-place
+        each row in state.sections
+          each elem in row
+            .place-board__work-section(class = elem.white ? 'place-board__work-section--white' : '', data-click= 'clickSection')
+              span!= elem.phrase

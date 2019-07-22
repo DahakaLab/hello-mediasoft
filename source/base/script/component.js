@@ -3,7 +3,7 @@ import render from "./render";
 export default class Component {
   constructor(targetEl, state) {
     this._targetEl = targetEl;
-    this._state = state;
+    this.state = state;
     this._template = '';
     this.$refs = {};
   }
@@ -24,6 +24,7 @@ export default class Component {
 
   _updated() {
     this._uppdateRefs();
+    this._updateEvents();
   }
 
   _uppdateRefs() {
@@ -38,6 +39,15 @@ export default class Component {
       } else {
         this.$refs[currentAttr] = [currentRef, refsEl];
       }
+    });
+  }
+
+  _updateEvents() {
+    const clickEls = Array.from(this._targetEl.querySelectorAll('[data-click]'));
+    clickEls.forEach((clickEl) => {
+      const currentClick = clickEl.dataset.click;
+      this[currentClick] = this[currentClick].bind(this);
+      clickEl.addEventListener('click', this[currentClick])
     });
   }
 }
